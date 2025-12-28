@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/auth_controller.dart';
+import 'package:trade_pips_ai_flutter/presentation/auth/change_password_screen.dart';
+import 'package:trade_pips_ai_flutter/presentation/auth/success_screen.dart';
 
 class VerifyEmailScreen extends GetView<AuthController> {
   const VerifyEmailScreen({super.key, required this.isSignUp});
@@ -116,7 +118,18 @@ class VerifyEmailScreen extends GetView<AuthController> {
                                 : Colors.grey,
                           ),
                           onPressed: controller.otp.value.length == 4
-                              ? controller.verifyOtp
+                              ? () async {
+                                  await controller.verifyOtp();
+                                  controller.confirmPasswordCtrl.clear();
+                                  controller.passwordCtrl.clear();
+                                  if (isSignUp) {
+                                    Get.offAll(SuccessScreen());
+                                  } else {
+                                    Get.back();
+                                    Get.back();
+                                    Get.to(ChangePasswordScreen());
+                                  }
+                                }
                               : () {},
                           child: const Text(
                             "Verify Code",

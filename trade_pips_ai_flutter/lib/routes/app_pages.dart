@@ -7,6 +7,8 @@ import 'package:trade_pips_ai_flutter/presentation/notifications/notifications_c
 import 'package:trade_pips_ai_flutter/presentation/notifications/notifications_screen.dart';
 import 'package:trade_pips_ai_flutter/presentation/settings/settings_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/signals/signals_controller.dart';
+import 'package:trade_pips_ai_flutter/presentation/subscribe/subscribe_controller.dart';
+import 'package:trade_pips_ai_flutter/presentation/subscribe/subscribe_screen.dart';
 import 'package:trade_pips_ai_flutter/presentation/tab/main_screen.dart';
 import 'package:trade_pips_ai_flutter/presentation/tab/main_screen_controller.dart';
 
@@ -19,7 +21,7 @@ class AppPages {
       page: () => AuthScreen(),
       binding: BindingsBuilder(
         () {
-          Get.lazyPut<AuthController>(() => AuthController());
+          Get.put<AuthController>(AuthController());
         },
       ),
     ),
@@ -28,18 +30,27 @@ class AppPages {
       page: () => MainScreen(),
       binding: BindingsBuilder(
         () {
-          Get.lazyPut<MainScreenController>(() => MainScreenController());
-          Get.lazyPut<SignalsController>(() => SignalsController());
-          Get.lazyPut<ChartsController>(() => ChartsController());
-          Get.lazyPut<NewsController>(() => NewsController());
-          Get.lazyPut<SettingsController>(() => SettingsController());
-          Get.lazyPut<NotificationsController>(() => NotificationsController());
+          Get.put<MainScreenController>(MainScreenController());
+          Get.put<SignalsController>(SignalsController());
+          Get.put<ChartsController>(ChartsController());
+          Get.put<NewsController>(NewsController());
+          Get.put<SettingsController>(SettingsController());
+          Get.put<NotificationsController>(NotificationsController());
         },
       ),
     ),
     GetPage(
       name: AppRoutes.notifications,
       page: () => NotificationsScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.subscribe,
+      page: () => SubscribeScreen(),
+      binding: BindingsBuilder(
+        () {
+          Get.put<SubscribeController>(SubscribeController());
+        },
+      ),
     ),
   ];
 }
@@ -48,4 +59,5 @@ class AppRoutes {
   static const auth = "/auth";
   static const main = "/main";
   static const notifications = "/notifications";
+  static const subscribe = "/subscribe";
 }

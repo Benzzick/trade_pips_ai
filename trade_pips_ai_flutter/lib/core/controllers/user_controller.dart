@@ -7,6 +7,7 @@ class UserController extends GetxController {
     email: "email@email.com",
     enablePushNotifications: false,
     enableNewsUpdates: false,
+    subscriptionEndDate: DateTime.now().subtract(const Duration(days: 3)),
   ).obs;
 
   String getNameAbbreviation(String name) {

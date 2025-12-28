@@ -3,12 +3,14 @@ class UserModel {
   final String email;
   final bool enablePushNotifications;
   final bool enableNewsUpdates;
+  final DateTime subscriptionEndDate;
 
   const UserModel({
     required this.name,
     required this.email,
     required this.enablePushNotifications,
     required this.enableNewsUpdates,
+    required this.subscriptionEndDate,
   });
 
   // 🔁 copyWith
@@ -17,6 +19,7 @@ class UserModel {
     String? email,
     bool? enablePushNotifications,
     bool? enableNewsUpdates,
+    DateTime? subscriptionEndDate,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -24,6 +27,7 @@ class UserModel {
       enablePushNotifications:
           enablePushNotifications ?? this.enablePushNotifications,
       enableNewsUpdates: enableNewsUpdates ?? this.enableNewsUpdates,
+      subscriptionEndDate: subscriptionEndDate ?? this.subscriptionEndDate,
     );
   }
 
@@ -34,6 +38,7 @@ class UserModel {
       'email': email,
       'enablePushNotifications': enablePushNotifications,
       'enableNewsUpdates': enableNewsUpdates,
+      'subscriptionDate': subscriptionEndDate,
     };
   }
 
@@ -44,6 +49,7 @@ class UserModel {
       email: json['email'] ?? '',
       enablePushNotifications: json['enablePushNotifications'] ?? false,
       enableNewsUpdates: json['enableNewsUpdates'] ?? false,
+      subscriptionEndDate: json['subscriptionDate'] ?? DateTime.now(),
     );
   }
 }

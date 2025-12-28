@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
+import 'package:trade_pips_ai_flutter/core/controllers/top_snack_bar_controller.dart';
 import 'package:trade_pips_ai_flutter/core/controllers/user_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/auth_controller.dart';
 import 'package:trade_pips_ai_flutter/routes/app_pages.dart';
+import 'package:trade_pips_ai_flutter/widgets/custom_snackbar_widget.dart';
 
 import 'core/config/app_config.dart';
 import 'screens/greetings_screen.dart';
@@ -26,6 +28,11 @@ late String serverUrl;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown, // Optional: allow upside-down portrait
+  ]);
 
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
@@ -82,9 +89,18 @@ class TradePipsAi extends StatelessWidget {
       getPages: AppPages.routes,
       initialBinding: BindingsBuilder(
         () {
-          Get.lazyPut<UserController>(() => UserController());
+          Get.put<UserController>(UserController());
+          Get.put<TopSnackBarController>(TopSnackBarController());
         },
       ),
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child!,
+            SafeArea(child: TopSnackBarWidget()),
+          ],
+        );
+      },
     );
   }
 }

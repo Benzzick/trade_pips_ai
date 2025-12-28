@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:trade_pips_ai_flutter/core/controllers/top_snack_bar_controller.dart';
+import 'package:trade_pips_ai_flutter/core/controllers/user_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/verify_email_screen.dart';
 import 'package:trade_pips_ai_flutter/routes/app_pages.dart';
 
@@ -36,17 +38,45 @@ class AuthController extends GetxController {
     isLogin.toggle();
   }
 
-  Future<void> loginWithGoogle() async {}
+  Future<void> loginWithGoogle() async {
+    int index = 1;
+    while (true) {
+      if (index.isOdd) {
+        Get.find<TopSnackBarController>().show(
+          message: "Trade executed successfully 💵",
+          success: true,
+        );
+      } else {
+        Get.find<TopSnackBarController>().show(
+          message: "Insufficient balance!",
+          success: false,
+        );
+      }
+
+      index++;
+
+      await Future.delayed(const Duration(seconds: 4));
+    }
+  }
 
   Future<void> loginWithEmail() async {
-    Get.offNamed(AppRoutes.main);
+    final userController = Get.find<UserController>();
+    if (DateTime.now().isBefore(
+      userController.user.value.subscriptionEndDate,
+    )) {
+      Get.offAllNamed(AppRoutes.main);
+    } else {
+      Get.offAllNamed(AppRoutes.subscribe);
+    }
   }
 
   Future<void> createAccount() async {
     Get.to(VerifyEmailScreen(isSignUp: true));
   }
 
-  Future<void> sendOtp() async {}
+  Future<void> sendOtp() async {
+    otp.value = '';
+  }
 
   Future<void> verifyOtp() async {}
 }
