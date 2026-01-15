@@ -1,14 +1,10 @@
 import 'package:get/get.dart';
+import 'package:trade_pips_ai_flutter/core/services/storage_service.dart';
+import 'package:trade_pips_ai_flutter/core/services/user_service.dart';
 import 'package:trade_pips_ai_flutter/models/user_model.dart';
 
 class UserController extends GetxController {
-  final Rx<UserModel> user = UserModel(
-    name: "Jahbuikem Nwazue",
-    email: "email@email.com",
-    enablePushNotifications: false,
-    enableNewsUpdates: false,
-    subscriptionEndDate: DateTime.now().subtract(const Duration(days: 3)),
-  ).obs;
+  final Rx<UserModel?> user = Rx<UserModel?>(null);
 
   String getNameAbbreviation(String name) {
     final trimmed = name.trim();
@@ -29,7 +25,7 @@ class UserController extends GetxController {
     bool? enablePushNotifications,
     bool? enableNewsUpdates,
   }) {
-    final updatedUser = user.value.copyWith(
+    final updatedUser = user.value?.copyWith(
       name: name,
       email: email,
       enableNewsUpdates: enableNewsUpdates,
@@ -39,5 +35,28 @@ class UserController extends GetxController {
     user.value = updatedUser;
   }
 
-  void logOut() {}
+  Future<void> saveUser(UserModel toStoreUser) async {
+    final storage = Get.find<StorageService>();
+    await storage.saveUser(toStoreUser);
+    user.value = toStoreUser;
+  }
+
+  Future<bool> refreshAccessToken() async {
+    final accessToken = await Get.find<UserService>().refreshAccessToken(
+      user.value!.refreshToken,
+    );
+    if (accessToken != null) {
+      saveUser(user.value!.copyWith(accessToken: accessToken));
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> logOut() async {
+    final storage = Get.find<StorageService>();
+
+    await storage.clear();
+    user.value = null;
+  }
 }

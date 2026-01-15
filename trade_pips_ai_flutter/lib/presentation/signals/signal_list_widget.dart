@@ -12,16 +12,22 @@ class SignalListWidget extends GetView<SignalsController> {
 
   @override
   Widget build(BuildContext context) {
+    if (controller.uniqueStrategies.isEmpty) {
+      return const SizedBox();
+    }
+
+    final list = controller.uniqueStrategies.values.toList();
+
+    final safeIndex = controller.safeSelectedIndex;
+
     return ListView.builder(
-      itemCount: controller.uniqueStrategies.values
-          .toList()[controller.selectedSignalIndex.value]
-          .length,
+      itemCount: list[safeIndex].length,
       itemBuilder: (context, index) {
         final color =
-            controller.statBgColors[controller.selectedSignalIndex.value %
+            controller.statBgColors[controller.safeSelectedIndex %
                 controller.statBgColors.length];
-        final signal = controller.uniqueStrategies.values
-            .toList()[controller.selectedSignalIndex.value][index];
+        final signals = list[safeIndex];
+        final signal = signals[index];
 
         return Column(
           children: [
@@ -260,10 +266,10 @@ class SignalListWidget extends GetView<SignalsController> {
                     height: 15,
                   ),
                   Obx(() {
-                    final tpIndex = controller
-                        .selectedTpIndex[controller.selectedSignalIndex.value];
-                    final slIndex = controller
-                        .selectedSlIndex[controller.selectedSignalIndex.value];
+                    final strategyIndex = controller.safeSelectedIndex;
+
+                    final tpIndex = controller.selectedTpIndex[strategyIndex];
+                    final slIndex = controller.selectedSlIndex[strategyIndex];
 
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -328,8 +334,7 @@ class SignalListWidget extends GetView<SignalsController> {
                                       if (tpIndex <
                                           signal.takeProfitPrice.length - 1) {
                                         controller.selectedTpIndex[controller
-                                                .selectedSignalIndex
-                                                .value] +=
+                                                .safeSelectedIndex] +=
                                             1;
                                       }
                                     },
@@ -343,8 +348,7 @@ class SignalListWidget extends GetView<SignalsController> {
                                     onTap: () {
                                       if (tpIndex > 0) {
                                         controller.selectedTpIndex[controller
-                                                .selectedSignalIndex
-                                                .value] -=
+                                                .safeSelectedIndex] -=
                                             1;
                                       }
                                     },
@@ -422,8 +426,7 @@ class SignalListWidget extends GetView<SignalsController> {
                                       if (slIndex <
                                           signal.stopLossPrice.length - 1) {
                                         controller.selectedSlIndex[controller
-                                                .selectedSignalIndex
-                                                .value] +=
+                                                .safeSelectedIndex] +=
                                             1;
                                       }
                                     },
@@ -437,8 +440,7 @@ class SignalListWidget extends GetView<SignalsController> {
                                     onTap: () {
                                       if (slIndex > 0) {
                                         controller.selectedSlIndex[controller
-                                                .selectedSignalIndex
-                                                .value] -=
+                                                .safeSelectedIndex] -=
                                             1;
                                       }
                                     },
@@ -474,8 +476,7 @@ class SignalListWidget extends GetView<SignalsController> {
                         context,
                         signal,
                         controller.selectedSlIndex[controller
-                            .selectedSignalIndex
-                            .value],
+                            .safeSelectedIndex],
                       ),
                       child: Text(
                         "Risk Management",
@@ -490,11 +491,7 @@ class SignalListWidget extends GetView<SignalsController> {
                 ],
               ),
             ),
-            if (index ==
-                controller.uniqueStrategies.values
-                        .toList()[controller.selectedSignalIndex.value]
-                        .length -
-                    1)
+            if (index == signals.length - 1)
               SizedBox(
                 height: 20,
               ),

@@ -4,7 +4,7 @@ import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/core/utils/time_util.dart';
 import 'package:trade_pips_ai_flutter/presentation/news/news_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/news/news_modal.dart';
-import 'package:trade_pips_ai_flutter/widgets/no_items_widget.dart';
+import 'package:trade_pips_ai_flutter/core/widgets/no_items_widget.dart';
 
 class NewsWidget extends GetView<NewsController> {
   const NewsWidget({super.key});

@@ -6,8 +6,8 @@ import 'package:trade_pips_ai_flutter/presentation/signals/signal_list_widget.da
 import 'package:trade_pips_ai_flutter/presentation/signals/signals_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/signals/stat_widget.dart';
 import 'package:trade_pips_ai_flutter/presentation/signals/strategy_header_widget.dart';
-import 'package:trade_pips_ai_flutter/widgets/no_items_widget.dart';
-import 'package:trade_pips_ai_flutter/widgets/notifications_icon_button.dart';
+import 'package:trade_pips_ai_flutter/core/widgets/no_items_widget.dart';
+import 'package:trade_pips_ai_flutter/core/widgets/notifications_icon_button.dart';
 
 class SignalsScreen extends GetView<SignalsController> {
   const SignalsScreen({super.key});
@@ -84,37 +84,38 @@ class SignalsScreen extends GetView<SignalsController> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Tooltip(
-                        message:
-                            "This is the ${controller.uniqueStrategies.keys.toList()[controller.selectedSignalIndex.value]} strategy",
-                        triggerMode: TooltipTriggerMode.tap, // 👈 show on tap
-                        preferBelow: false,
-                        textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              "assets/icons/info.png",
-                              scale: 2,
-                            ),
-                            const SizedBox(width: 5),
-                            const Text(
-                              "Info",
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                      if (controller.uniqueStrategies.isNotEmpty)
+                        Tooltip(
+                          message:
+                              "This is the ${controller.uniqueStrategies.keys.toList()[controller.selectedSignalIndex.value]} strategy",
+                          triggerMode: TooltipTriggerMode.tap, // 👈 show on tap
+                          preferBelow: false,
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                "assets/icons/info.png",
+                                scale: 2,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 5),
+                              const Text(
+                                "Info",
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   if (controller.signals.isEmpty)
@@ -138,31 +139,32 @@ class SignalsScreen extends GetView<SignalsController> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color:
-                                    controller.statBgColors[controller
-                                            .selectedSignalIndex
-                                            .value %
-                                        controller.statBgColors.length],
-                                borderRadius: BorderRadius.circular(20),
+                        if (controller.uniqueStrategies.isNotEmpty)
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      controller.statBgColors[controller
+                                              .selectedSignalIndex
+                                              .value %
+                                          controller.statBgColors.length],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                height: 9,
+                                width: 9,
                               ),
-                              height: 9,
-                              width: 9,
-                            ),
-                            const SizedBox(width: 5),
-                            const Text(
-                              "In Real Time",
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                              const SizedBox(width: 5),
+                              const Text(
+                                "In Real Time",
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                       ],
                     ),
                     SizedBox(

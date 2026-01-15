@@ -31,12 +31,5 @@ class NewsController extends GetxController {
     ),
   ].obs;
 
-  final Rx<NewsModel?> breakingNews = NewsModel(
-    time: DateTime.now().subtract(Duration(hours: 2)),
-    currency: "EUR",
-    title: "ECB Interest Rate Decision",
-    description:
-        "European Central Bank raised interest rates by 0.25%. final text = controller.breakingNews.value.description;",
-    impact: NewsImpact.medium,
-  ).obs;
+  final Rxn<NewsModel> breakingNews = Rxn<NewsModel>();
 }

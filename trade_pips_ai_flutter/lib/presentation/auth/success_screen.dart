@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/auth_controller.dart';
+import 'package:trade_pips_ai_flutter/routes/app_pages.dart';
 
 class SuccessScreen extends GetView<AuthController> {
   const SuccessScreen({super.key});
@@ -39,23 +40,13 @@ class SuccessScreen extends GetView<AuthController> {
                   Column(
                     children: [
                       Text(
-                        "Change Password",
+                        "Successful",
                         style: TextStyle(
                           color: AppColors.primary,
                           fontSize: 32,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Text(
-                        "Hey, please change you password and login",
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Row(),
                     ],
                   ),
                   SizedBox(
@@ -71,11 +62,11 @@ class SuccessScreen extends GetView<AuthController> {
                     height: 55,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: controller.otp.value.length == 4
-                            ? AppColors.secondary
-                            : Colors.grey,
+                        backgroundColor: AppColors.secondary,
                       ),
-                      onPressed: controller.loginWithEmail,
+                      onPressed: () {
+                        Get.offAllNamed(AppRoutes.main);
+                      },
                       child: const Text(
                         "Continue",
                         style: TextStyle(

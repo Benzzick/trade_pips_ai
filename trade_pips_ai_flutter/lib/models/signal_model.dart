@@ -36,6 +36,34 @@ class SignalModel {
     required this.maxLot,
     required this.isIndex,
   });
+
+  factory SignalModel.fromJson(Map<String, dynamic> json) {
+    return SignalModel(
+      direction: json['direction'] == 'BUY'
+          ? SignalDirection.buy
+          : SignalDirection.sell,
+      pair: json['pair'],
+      strategy: json['strategy'],
+      timeGotSignal: DateTime.parse(json['created_at']),
+      targetPips: json['target_pips'],
+      timeFrame: json['timeframe'],
+      probability: json['probability'],
+      entryPrice: double.parse(json['entry_price'].toString()),
+      takeProfitPrice: (json['take_profit_price'] as List)
+          .map((e) => double.parse(e.toString()))
+          .toList(),
+      stopLossPrice: (json['stop_loss_price'] as List)
+          .map((e) => double.parse(e.toString()))
+          .toList(),
+      contractSize: (json['contract_size'] as num).toDouble(),
+      tickSize: (json['tick_size'] as num).toDouble(),
+      tickValue: (json['tick_value'] as num).toDouble(),
+      minLot: (json['min_lot'] as num).toDouble(),
+      lotStep: (json['lot_step'] as num).toDouble(),
+      maxLot: (json['max_lot'] as num).toDouble(),
+      isIndex: json['is_index'] ?? false,
+    );
+  }
 }
 
 enum SignalDirection { buy, sell }

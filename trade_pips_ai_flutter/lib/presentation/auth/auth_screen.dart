@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/auth_controller.dart';
-import 'package:trade_pips_ai_flutter/presentation/auth/verify_email_screen.dart';
 
 class AuthScreen extends GetView<AuthController> {
   const AuthScreen({super.key});
@@ -16,8 +15,12 @@ class AuthScreen extends GetView<AuthController> {
     return PopScope(
       canPop: !controller.isLogin.value,
       onPopInvokedWithResult: (bool didPop, Object? result) {
-        if (!didPop) {
+        if (didPop) return;
+
+        if (!controller.isLogin.value) {
           controller.toggleisLogin();
+        } else {
+          // SystemNavigator.pop();
         }
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -93,6 +96,9 @@ class AuthScreen extends GetView<AuthController> {
                               fontSize: 13,
                               color: Color.fromRGBO(0, 0, 0, 1),
                             ),
+                            onTapOutside: (event) {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             decoration: InputDecoration(
                               hintText: 'Email',
                               hintStyle: TextStyle(
@@ -137,6 +143,9 @@ class AuthScreen extends GetView<AuthController> {
                                 fontSize: 13,
                                 color: Color.fromRGBO(0, 0, 0, 1),
                               ),
+                              onTapOutside: (event) {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                              },
                               obscureText: controller.seePassword.value,
                               decoration: InputDecoration(
                                 hintText: 'Password',
@@ -198,6 +207,9 @@ class AuthScreen extends GetView<AuthController> {
                                   fontSize: 13,
                                   color: Color.fromRGBO(0, 0, 0, 1),
                                 ),
+                                onTapOutside: (event) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
                                 obscureText: controller.seePassword.value,
                                 decoration: InputDecoration(
                                   hintText: 'Confirm Password',
@@ -263,9 +275,11 @@ class AuthScreen extends GetView<AuthController> {
                                       fontSize: 15,
                                     ),
                                     recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        showCustomBottomModal(context);
-                                      },
+                                      ..onTap = controller.isLoading.value
+                                          ? () {}
+                                          : () {
+                                              showCustomBottomModal(context);
+                                            },
                                   ),
                                 ),
                               ],
@@ -281,18 +295,30 @@ class AuthScreen extends GetView<AuthController> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.secondary,
                               ),
-                              onPressed: controller.isLogin.value
+                              onPressed: controller.isLoading.value
+                                  ? () {}
+                                  : controller.isLogin.value
                                   ? controller.loginWithEmail
-                                  : controller.createAccount,
-                              child: Text(
-                                controller.isLogin.value
-                                    ? "Login"
-                                    : "Create Account",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                ),
-                              ),
+                                  : controller.sendOtpToCreateAccount,
+                              child: controller.isLoading.value
+                                  ? SizedBox(
+                                      height: 30,
+                                      width: 30,
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: AppColors.secondary,
+                                        color: Colors.white,
+                                        strokeCap: StrokeCap.round,
+                                      ),
+                                    )
+                                  : Text(
+                                      controller.isLogin.value
+                                          ? "Login"
+                                          : "Create Account",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                             ),
                           ),
                           SizedBox(
@@ -322,14 +348,26 @@ class AuthScreen extends GetView<AuthController> {
                                 "assets/icons/google.png",
                                 scale: 2,
                               ),
-                              onPressed: controller.loginWithGoogle,
-                              label: Text(
-                                "Google",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
+                              onPressed: controller.isLoading.value
+                                  ? () {}
+                                  : controller.loginWithGoogle,
+                              label: controller.isLoading.value
+                                  ? SizedBox(
+                                      height: 30,
+                                      width: 30,
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: Colors.white,
+                                        color: Colors.black,
+                                        strokeCap: StrokeCap.round,
+                                      ),
+                                    )
+                                  : Text(
+                                      "Google",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black,
+                                      ),
+                                    ),
                             ),
                           ),
                           if (controller.isLogin.value) ...[
@@ -356,7 +394,9 @@ class AuthScreen extends GetView<AuthController> {
                                           decorationColor: AppColors.primary,
                                         ),
                                         recognizer: TapGestureRecognizer()
-                                          ..onTap = controller.toggleisLogin,
+                                          ..onTap = controller.isLoading.value
+                                              ? () {}
+                                              : controller.toggleisLogin,
                                       ),
                                     ],
                                   ),
@@ -389,129 +429,146 @@ class AuthScreen extends GetView<AuthController> {
       backgroundColor: Colors.transparent,
       isDismissible: true,
       builder: (context) {
-        return Stack(
-          children: [
-            BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 2,
-                sigmaY: 2,
+        return Obx(
+          () => Stack(
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 2,
+                  sigmaY: 2,
+                ),
+                child: Container(
+                  color: Colors.black.withAlpha(0),
+                ),
               ),
-              child: Container(
-                color: Colors.black.withAlpha(0),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: SingleChildScrollView(
-                  child: Container(
-                    height: 370,
-                    width: 440,
-                    margin: EdgeInsets.only(top: 279.5),
-                    padding: EdgeInsets.only(top: 10, left: 20, right: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
-                        bottomLeft: Radius.circular(0),
-                        bottomRight: Radius.circular(0),
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SingleChildScrollView(
+                    child: Container(
+                      height: 370,
+                      width: 440,
+                      margin: EdgeInsets.only(top: 279.5),
+                      padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40),
+                          bottomLeft: Radius.circular(0),
+                          bottomRight: Radius.circular(0),
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 142,
-                          height: 7,
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: AppColors.secondary,
-                            borderRadius: BorderRadius.circular(30),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 142,
+                            height: 7,
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 15),
-                        Text(
-                          "Input Email",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(height: 15),
+                          Text(
+                            "Input Email",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          "Please input an email address where we can send an otp",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                          SizedBox(height: 10),
+                          Text(
+                            "Please input an email address where we can send a reset token!",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: 40),
-                        SizedBox(
-                          height: 55,
-                          child: TextField(
-                            controller: controller.emailCtrl,
-                            keyboardType: TextInputType.emailAddress,
-                            autofillHints: const [AutofillHints.email],
-                            style: TextStyle(fontSize: 13, color: Colors.black),
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              hintStyle: TextStyle(
+                          SizedBox(height: 40),
+                          SizedBox(
+                            height: 55,
+                            child: TextField(
+                              controller: controller.emailCtrl,
+                              keyboardType: TextInputType.emailAddress,
+                              autofillHints: const [AutofillHints.email],
+                              style: TextStyle(
                                 fontSize: 13,
-                                color: Color.fromRGBO(0, 0, 0, 1),
-                              ),
-                              prefixIcon: Image.asset(
-                                'assets/icons/mail.png',
-                                scale: 2,
                                 color: Colors.black,
                               ),
-                              filled: true,
-                              fillColor: AppColors.primary,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(
-                                  width: 2,
-                                  color: Color.fromRGBO(3, 1, 29, 0.5),
+                              onTapOutside: (event) {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'Email',
+                                hintStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: Color.fromRGBO(0, 0, 0, 1),
+                                ),
+                                prefixIcon: Image.asset(
+                                  'assets/icons/mail.png',
+                                  scale: 2,
+                                  color: Colors.black,
+                                ),
+                                filled: true,
+                                fillColor: AppColors.primary,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide(
+                                    width: 2,
+                                    color: Color.fromRGBO(3, 1, 29, 0.5),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 40),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.secondary,
-                            ),
-                            onPressed: () async {
-                              await controller.sendOtp();
-                              Get.to(VerifyEmailScreen(isSignUp: false));
-                            },
-                            child: Text(
-                              "Send",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
+                          SizedBox(height: 40),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 55,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.secondary,
                               ),
+                              onPressed: controller.isLoading.value
+                                  ? () {}
+                                  : controller.sendOtpToResetPassword,
+                              child: controller.isLoading.value
+                                  ? SizedBox(
+                                      height: 30,
+                                      width: 30,
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: AppColors.secondary,
+                                        color: Colors.white,
+                                        strokeCap: StrokeCap.round,
+                                      ),
+                                    )
+                                  : Text(
+                                      "Send",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                      ],
+                          SizedBox(height: 20),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

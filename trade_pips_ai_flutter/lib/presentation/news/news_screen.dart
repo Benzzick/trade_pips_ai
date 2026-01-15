@@ -7,7 +7,7 @@ import 'package:trade_pips_ai_flutter/core/utils/time_util.dart';
 import 'package:trade_pips_ai_flutter/presentation/news/news_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/news/news_modal.dart';
 import 'package:trade_pips_ai_flutter/presentation/news/news_widget.dart';
-import 'package:trade_pips_ai_flutter/widgets/notifications_icon_button.dart';
+import 'package:trade_pips_ai_flutter/core/widgets/notifications_icon_button.dart';
 
 class NewsScreen extends GetView<NewsController> {
   const NewsScreen({super.key});

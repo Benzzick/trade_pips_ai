@@ -35,7 +35,7 @@ class UserDetailsWidget extends GetView<SettingsController> {
                 ),
                 child: Text(
                   userController.getNameAbbreviation(
-                    userController.user.value.name.toUpperCase(),
+                    userController.user.value?.name.toUpperCase() ?? '',
                   ),
                   style: TextStyle(
                     fontSize: 22,
@@ -51,7 +51,7 @@ class UserDetailsWidget extends GetView<SettingsController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    userController.user.value.name.toUpperCase(),
+                    userController.user.value?.name.toUpperCase() ?? '',
                     style: TextStyle(
                       color: AppColors.primary,
                       fontSize: 12,
@@ -64,7 +64,7 @@ class UserDetailsWidget extends GetView<SettingsController> {
                     height: 5,
                   ),
                   Text(
-                    userController.user.value.email,
+                    userController.user.value?.email ?? '',
                     style: TextStyle(
                       color: AppColors.primary,
                       fontSize: 12,

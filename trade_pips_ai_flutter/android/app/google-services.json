@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "194616060044",
+    "project_id": "trade-pips-ai",
+    "storage_bucket": "trade-pips-ai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:194616060044:android:48a57042fa1cceb6b8b3a9",
+        "android_client_info": {
+          "package_name": "com.example.trade_pips_ai_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0Ii84KiMbsqtDFCwCJ07MJ-hQXmR00qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

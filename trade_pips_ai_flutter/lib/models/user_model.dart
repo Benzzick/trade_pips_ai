@@ -3,14 +3,16 @@ class UserModel {
   final String email;
   final bool enablePushNotifications;
   final bool enableNewsUpdates;
-  final DateTime subscriptionEndDate;
+  final String accessToken;
+  final String refreshToken;
 
   const UserModel({
     required this.name,
     required this.email,
     required this.enablePushNotifications,
     required this.enableNewsUpdates,
-    required this.subscriptionEndDate,
+    required this.accessToken,
+    required this.refreshToken,
   });
 
   // 🔁 copyWith
@@ -19,7 +21,8 @@ class UserModel {
     String? email,
     bool? enablePushNotifications,
     bool? enableNewsUpdates,
-    DateTime? subscriptionEndDate,
+    String? accessToken,
+    String? refreshToken,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -27,7 +30,8 @@ class UserModel {
       enablePushNotifications:
           enablePushNotifications ?? this.enablePushNotifications,
       enableNewsUpdates: enableNewsUpdates ?? this.enableNewsUpdates,
-      subscriptionEndDate: subscriptionEndDate ?? this.subscriptionEndDate,
+      accessToken: accessToken ?? this.accessToken,
+      refreshToken: refreshToken ?? this.refreshToken,
     );
   }
 
@@ -38,7 +42,8 @@ class UserModel {
       'email': email,
       'enablePushNotifications': enablePushNotifications,
       'enableNewsUpdates': enableNewsUpdates,
-      'subscriptionDate': subscriptionEndDate,
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
     };
   }
 
@@ -47,9 +52,10 @@ class UserModel {
     return UserModel(
       name: json['name'] ?? '',
       email: json['email'] ?? '',
-      enablePushNotifications: json['enablePushNotifications'] ?? false,
-      enableNewsUpdates: json['enableNewsUpdates'] ?? false,
-      subscriptionEndDate: json['subscriptionDate'] ?? DateTime.now(),
+      enablePushNotifications: json['push_notifications'] ?? false,
+      enableNewsUpdates: json['news_updates'] ?? false,
+      accessToken: json['accessToken'] ?? '',
+      refreshToken: json['refreshToken'] ?? '',
     );
   }
 }

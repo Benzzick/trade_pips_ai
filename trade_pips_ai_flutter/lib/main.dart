@@ -1,60 +1,26 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
-import 'package:trade_pips_ai_client/trade_pips_ai_client.dart';
 import 'package:flutter/material.dart';
-import 'package:serverpod_flutter/serverpod_flutter.dart';
-import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/core/controllers/top_snack_bar_controller.dart';
 import 'package:trade_pips_ai_flutter/core/controllers/user_controller.dart';
-import 'package:trade_pips_ai_flutter/presentation/auth/auth_controller.dart';
+import 'package:trade_pips_ai_flutter/core/services/storage_service.dart';
+import 'package:trade_pips_ai_flutter/core/services/user_service.dart';
 import 'package:trade_pips_ai_flutter/routes/app_pages.dart';
-import 'package:trade_pips_ai_flutter/widgets/custom_snackbar_widget.dart';
-
-import 'core/config/app_config.dart';
-import 'screens/greetings_screen.dart';
-
-/// Sets up a global client object that can be used to talk to the server from
-/// anywhere in our app. The client is generated from your server code
-/// and is set up to connect to a Serverpod running on a local server on
-/// the default port. You will need to modify this to connect to staging or
-/// production servers.
-/// In a larger app, you may want to use the dependency injection of your choice
-/// instead of using a global client object. This is just a simple example.
-late final Client client;
-
-late String serverUrl;
+import 'package:trade_pips_ai_flutter/core/widgets/custom_snackbar_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+  await GetStorage.init();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown, // Optional: allow upside-down portrait
   ]);
-
-  // When you are running the app on a physical device, you need to set the
-  // server URL to the IP address of your computer. You can find the IP
-  // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
-  // You can set the variable when running or building your app like this:
-  // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`
-  const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
-  // AppConfig loads the API server URL from the assets/config.json file.
-  // When the app runs in a browser, this file is fetched from the server,
-  // allowing the server to change the API URL at runtime.
-  // This ensures the app always uses the correct API URL,
-  // no matter which environment it is running in.
-  final config = await AppConfig.loadConfig();
-  final serverUrl = serverUrlFromEnv.isEmpty
-      ? config.apiUrl ?? 'http://$localhost:8080/'
-      : serverUrlFromEnv;
-
-  client = Client(serverUrl)
-    ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = FlutterAuthSessionManager();
-
-  client.auth.initialize();
 
   runApp(const TradePipsAi());
 }
@@ -85,11 +51,13 @@ class TradePipsAi extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.background,
         fontFamily: 'Mulish',
       ),
-      initialRoute: AppRoutes.auth,
+      initialRoute: AppRoutes.splash,
       getPages: AppPages.routes,
       initialBinding: BindingsBuilder(
         () {
           Get.put<UserController>(UserController());
+          Get.put<UserService>(UserService());
+          Get.put<StorageService>(StorageService());
           Get.put<TopSnackBarController>(TopSnackBarController());
         },
       ),
@@ -104,29 +72,3 @@ class TradePipsAi extends StatelessWidget {
     );
   }
 }
-
-// class MyHomePage extends StatelessWidget {
-//   const MyHomePage({super.key, required this.title});
-
-//   final String title;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text(title)),
-//       body: const GreetingsScreen(),
-//       // To test authentication in this example app, uncomment the line below
-//       // and comment out the line above. This wraps the GreetingsScreen with a
-//       // SignInScreen, which automatically shows a sign-in UI when the user is
-//       // not authenticated and displays the GreetingsScreen once they sign in.
-//       //
-//       // body: SignInScreen(
-//       //   child: GreetingsScreen(
-//       //     onSignOut: () async {
-//       //       await client.auth.signOutDevice();
-//       //     },
-//       //   ),
-//       // ),
-//     );
-//   }
-// }

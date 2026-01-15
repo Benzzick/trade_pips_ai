@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/core/utils/time_util.dart';
 import 'package:trade_pips_ai_flutter/presentation/notifications/notifications_controller.dart';
-import 'package:trade_pips_ai_flutter/widgets/no_items_widget.dart';
+import 'package:trade_pips_ai_flutter/core/widgets/no_items_widget.dart';
 
 class NotificationsListWidget extends GetView<NotificationsController> {
   const NotificationsListWidget({super.key});

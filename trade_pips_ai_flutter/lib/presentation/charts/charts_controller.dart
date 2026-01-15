@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/models/candle_data_model.dart';
 import 'package:trade_pips_ai_flutter/models/chart_pair_model.dart';
@@ -64,35 +62,81 @@ class ChartsController extends GetxController {
 
   final RxInt selectedChartPairIndex = 0.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    generateChartData(chartPairs[0]);
+  String mapTimeframe(String tf) {
+    switch (tf) {
+      case 'M1':
+        return '1';
+      case 'M5':
+        return '5';
+      case 'M15':
+        return '15';
+      case 'H1':
+        return '60';
+      case 'H4':
+        return '240';
+      case 'D1':
+        return 'D';
+      default:
+        return '15';
+    }
   }
 
-  void generateChartData(ChartPairModel chartPair) {
-    chartData.clear();
-    final random = Random();
-    double lastClose = 1.0920; // starting price
+  String tradingViewHtml({
+    required String symbol,
+    required String interval,
+    bool darkMode = false,
+  }) {
+    String mappedInterval = mapTimeframe(interval);
 
-    for (int i = 0; i < 10000; i++) {
-      // Simulate price movements
-      double open = lastClose;
-      double high = open + random.nextDouble() * 0.0020; // up to +20 pips
-      double low = open - random.nextDouble() * 0.0020; // down to -20 pips
-      double close = low + random.nextDouble() * (high - low);
-
-      chartData.add(
-        CandleDataModel(
-          time: DateTime.now().subtract(Duration(minutes: 15 * (50 - i))),
-          open: double.parse(open.toStringAsFixed(4)),
-          high: double.parse(high.toStringAsFixed(4)),
-          low: double.parse(low.toStringAsFixed(4)),
-          close: double.parse(close.toStringAsFixed(4)),
-        ),
-      );
-
-      lastClose = close;
+    return '''
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* 🚫 Kill scrollbars */
+      background-color: ${darkMode ? '#000000' : '#ffffff'};
     }
+
+    #tradingview_chart {
+      position: fixed;
+      inset: 0; /* top:0; right:0; bottom:0; left:0 */
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+  </style>
+  </head>
+  <body style="margin:0;height:100vh;background-color:${darkMode ? '#000000' : '#ffffff'};">
+    <div id="tradingview_chart" style="width:100%;height:100%;"></div>
+    <script type="text/javascript">
+      const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      new TradingView.widget({
+        "container_id": "tradingview_chart",
+        "autosize": true,
+        "symbol": "$symbol",
+        "interval": "$mappedInterval",
+        "timezone": localTimezone,
+        "theme": "${darkMode ? 'dark' : 'light'}",
+        "style": "1",
+        "locale": "en",
+        "hide_top_toolbar": true,
+        "allow_symbol_change": false,
+        // "studies": ["MASimple@tv-basicstudies", "RSI@tv-basicstudies"], 
+        "withdateranges": false,
+        "details": false,
+        "readonly": true
+      });
+    </script>
+  </body>
+</html>
+''';
   }
 }

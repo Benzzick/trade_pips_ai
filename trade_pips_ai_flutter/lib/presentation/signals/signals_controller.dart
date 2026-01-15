@@ -12,6 +12,7 @@ class SignalsController extends GetxController {
   final RxDouble calculatedLotSize = 0.0.obs;
   final balanceCtrl = TextEditingController();
   final riskCtrl = TextEditingController();
+  Timer? _clockTimer;
 
   void calculateLotSize({
     required SignalModel signal,
@@ -54,14 +55,49 @@ class SignalsController extends GetxController {
     calculatedLotSize.value = lot;
   }
 
+  int get safeSelectedIndex {
+    if (uniqueStrategies.isEmpty) return 0;
+
+    if (selectedSignalIndex.value >= uniqueStrategies.length) {
+      selectedSignalIndex.value = 0;
+    }
+
+    return selectedSignalIndex.value;
+  }
+
   @override
   void onInit() {
     super.onInit();
-    selectedTpIndex.value = List.filled(signals.length, 0);
-    selectedSlIndex.value = List.filled(signals.length, 0);
-    Timer.periodic(Duration(seconds: 60), (timer) {
+
+    // Initial sync
+    syncStrategyIndexes();
+
+    // 🔥 Auto-sync whenever signals list changes
+    ever(signals, (_) {
+      syncStrategyIndexes();
+    });
+
+    _clockTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
       now.value = DateTime.now();
     });
+  }
+
+  void syncStrategyIndexes() {
+    final count = uniqueStrategies.length;
+
+    if (selectedTpIndex.length != count) {
+      selectedTpIndex.assignAll(List.generate(count, (_) => 0));
+    }
+
+    if (selectedSlIndex.length != count) {
+      selectedSlIndex.assignAll(List.generate(count, (_) => 0));
+    }
+  }
+
+  @override
+  void onClose() {
+    _clockTimer?.cancel();
+    super.onClose();
   }
 
   final RxList<TodayStatsModel> todaystats = <TodayStatsModel>[

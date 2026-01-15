@@ -18,4 +18,26 @@ class NewsModel {
     required this.description,
     required this.impact,
   });
+
+  factory NewsModel.fromJson(Map<String, dynamic> json) {
+    return NewsModel(
+      time: DateTime.parse(json['time'] as String),
+      currency: json['currency'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      impact: _impactFromString(json['impact'] as String),
+    );
+  }
+
+  static NewsImpact _impactFromString(String impact) {
+    switch (impact.toLowerCase()) {
+      case 'high':
+        return NewsImpact.high;
+      case 'medium':
+        return NewsImpact.medium;
+      case 'low':
+      default:
+        return NewsImpact.low;
+    }
+  }
 }

@@ -5,13 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/auth_controller.dart';
-import 'package:trade_pips_ai_flutter/presentation/auth/change_password_screen.dart';
-import 'package:trade_pips_ai_flutter/presentation/auth/success_screen.dart';
 
 class VerifyEmailScreen extends GetView<AuthController> {
-  const VerifyEmailScreen({super.key, required this.isSignUp});
-
-  final bool isSignUp;
+  const VerifyEmailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -77,68 +73,80 @@ class VerifyEmailScreen extends GetView<AuthController> {
                       Row(),
                     ],
                   ),
-                  Text.rich(
-                    TextSpan(
-                      text: "Didn’t receive any OTP code? ",
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 15,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Resend code",
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = controller.sendOtp,
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.primary,
-                          ),
+                  Obx(() {
+                    return Text.rich(
+                      TextSpan(
+                        text: "Didn’t receive any OTP code? ",
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 15,
                         ),
-                      ],
-                    ),
-                  ),
+                        children: [
+                          controller.canResend.value
+                              ? TextSpan(
+                                  text: "Resend code",
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = controller.isLoading.value
+                                        ? () {}
+                                        : controller.sendOtpToCreateAccount,
+                                  style: const TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: AppColors.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : TextSpan(
+                                  text:
+                                      "Resend in ${controller.resendSeconds.value}s",
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                        ],
+                      ),
+                    );
+                  }),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(
-                      4,
-                      (index) => pinInputBox(index: index),
+                      6,
+                      (index) => pinInputBox(index: index, context: context),
                     ),
                   ),
 
                   Obx(
                     () => Opacity(
-                      opacity: controller.otp.value.length == 4 ? 1 : .5,
+                      opacity: controller.otp.value.length == 6 ? 1 : .5,
                       child: SizedBox(
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: controller.otp.value.length == 4
+                            backgroundColor: controller.otp.value.length == 6
                                 ? AppColors.secondary
                                 : Colors.grey,
                           ),
-                          onPressed: controller.otp.value.length == 4
-                              ? () async {
-                                  await controller.verifyOtp();
-                                  controller.confirmPasswordCtrl.clear();
-                                  controller.passwordCtrl.clear();
-                                  if (isSignUp) {
-                                    Get.offAll(SuccessScreen());
-                                  } else {
-                                    Get.back();
-                                    Get.back();
-                                    Get.to(ChangePasswordScreen());
-                                  }
-                                }
+                          onPressed: controller.otp.value.length == 6
+                              ? controller.createAccount
                               : () {},
-                          child: const Text(
-                            "Verify Code",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          child: controller.isLoading.value
+                              ? SizedBox(
+                                  height: 30,
+                                  width: 30,
+                                  child: CircularProgressIndicator(
+                                    backgroundColor: AppColors.secondary,
+                                    color: Colors.white,
+                                    strokeCap: StrokeCap.round,
+                                  ),
+                                )
+                              : const Text(
+                                  "Verify Code",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
@@ -222,12 +230,12 @@ class VerifyEmailScreen extends GetView<AuthController> {
     );
   }
 
-  Widget pinInputBox({required int index}) {
+  Widget pinInputBox({required int index, required BuildContext context}) {
     return Obx(() {
       final otp = controller.otp.value;
 
       return Container(
-        width: 78,
+        width: (MediaQuery.of(context).size.width / 6) - 20,
         height: 55,
         alignment: Alignment.center,
         decoration: BoxDecoration(

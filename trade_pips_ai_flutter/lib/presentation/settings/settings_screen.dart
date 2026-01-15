@@ -7,7 +7,8 @@ import 'package:trade_pips_ai_flutter/core/controllers/user_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/settings/custom_toggle_widget.dart';
 import 'package:trade_pips_ai_flutter/presentation/settings/settings_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/settings/user_details_widget.dart';
-import 'package:trade_pips_ai_flutter/widgets/notifications_icon_button.dart';
+import 'package:trade_pips_ai_flutter/core/widgets/notifications_icon_button.dart';
+import 'package:trade_pips_ai_flutter/routes/app_pages.dart';
 
 class SettingsScreen extends GetView<SettingsController> {
   const SettingsScreen({super.key});
@@ -96,7 +97,11 @@ class SettingsScreen extends GetView<SettingsController> {
                         ),
                         CustomToggle(
                           value:
-                              userController.user.value.enablePushNotifications,
+                              userController
+                                  .user
+                                  .value
+                                  ?.enablePushNotifications ??
+                              false,
                           onChanged: (val) {
                             userController.changeUserData(
                               enablePushNotifications: val,
@@ -106,40 +111,42 @@ class SettingsScreen extends GetView<SettingsController> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 20,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "📰 News Updates".toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        CustomToggle(
-                          value: userController.user.value.enableNewsUpdates,
-                          onChanged: (val) {
-                            userController.changeUserData(
-                              enableNewsUpdates: val,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 10,
+                  // ),
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //     color: AppColors.secondary,
+                  //     borderRadius: BorderRadius.circular(15),
+                  //   ),
+                  //   padding: EdgeInsets.symmetric(
+                  //     horizontal: 20,
+                  //     vertical: 20,
+                  //   ),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       Text(
+                  //         "📰 News Updates".toUpperCase(),
+                  //         style: TextStyle(
+                  //           fontSize: 12,
+                  //           fontWeight: FontWeight.bold,
+                  //           color: AppColors.primary,
+                  //         ),
+                  //       ),
+                  //       CustomToggle(
+                  //         value:
+                  //             userController.user.value?.enableNewsUpdates ??
+                  //             false,
+                  //         onChanged: (val) {
+                  //           userController.changeUserData(
+                  //             enableNewsUpdates: val,
+                  //           );
+                  //         },
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   Spacer(),
                   SizedBox(
                     width: double.infinity,
@@ -151,7 +158,10 @@ class SettingsScreen extends GetView<SettingsController> {
                         ),
                         backgroundColor: Color.fromRGBO(255, 0, 0, 1),
                       ),
-                      onPressed: userController.logOut,
+                      onPressed: () {
+                        Get.offAndToNamed(AppRoutes.auth);
+                        userController.logOut();
+                      },
                       child: Text(
                         "Sign out".toUpperCase(),
                         style: TextStyle(
