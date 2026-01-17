@@ -10,13 +10,23 @@ class MainScreenController extends GetxController {
 
   final RxBool hasLoaded = false.obs;
 
+  void _scheduleNext() {
+    _refreshTimer?.cancel();
+
+    final duration = hasLoaded.value
+        ? const Duration(seconds: 30)
+        : const Duration(seconds: 5);
+
+    _refreshTimer = Timer(duration, () async {
+      await getMainScreenData();
+      _scheduleNext();
+    });
+  }
+
   @override
   void onReady() {
-    super.onInit();
-    getMainScreenData();
-    _refreshTimer = Timer.periodic(const Duration(minutes: 2), (_) {
-      getMainScreenData();
-    });
+    super.onReady();
+    getMainScreenData().then((_) => _scheduleNext());
   }
 
   @override

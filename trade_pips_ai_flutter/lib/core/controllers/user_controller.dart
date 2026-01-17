@@ -19,12 +19,13 @@ class UserController extends GetxController {
     }
   }
 
-  void changeUserData({
+  Future<void> changeUserData({
     String? name,
     String? email,
     bool? enablePushNotifications,
     bool? enableNewsUpdates,
-  }) {
+  }) async {
+    final currentUser = user.value;
     final updatedUser = user.value?.copyWith(
       name: name,
       email: email,
@@ -33,6 +34,19 @@ class UserController extends GetxController {
     );
 
     user.value = updatedUser;
+
+    final savedData = await Get.find<UserService>().saveUserData(
+      name: name,
+      email: email,
+      enablePushNotifications: enablePushNotifications,
+      enableNewsUpdates: enableNewsUpdates,
+    );
+
+    if (savedData) {
+      saveUser(updatedUser!);
+    } else {
+      user.value = currentUser;
+    }
   }
 
   Future<void> saveUser(UserModel toStoreUser) async {

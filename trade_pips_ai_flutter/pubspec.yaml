@@ -36,6 +36,7 @@ dependencies:
   google_sign_in: ^7.2.0
   firebase_messaging: ^16.1.0
   firebase_core: ^4.3.0
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
@@ -67,6 +68,7 @@ flutter:
     - assets/config.json
     - assets/icons/
     - assets/images/
+    - assets/lottie/
 dependency_overrides:
   flutter_secure_storage: ^10.0.0
 

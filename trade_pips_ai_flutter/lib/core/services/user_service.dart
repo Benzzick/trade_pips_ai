@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/core/constants/endpoints.dart';
+import 'package:trade_pips_ai_flutter/core/controllers/user_controller.dart';
 
 class UserService extends GetConnect {
   @override
@@ -24,5 +25,39 @@ class UserService extends GetConnect {
     } else {
       return null;
     }
+  }
+
+  Future<bool> saveUserData({
+    String? name,
+    String? email,
+    bool? enablePushNotifications,
+    bool? enableNewsUpdates,
+  }) async {
+    final accessToken =
+        Get.find<UserController>().user.value?.accessToken ?? "";
+
+    final saveUserDataResponse = await post(
+      Endpoints.toggleNotifications,
+      headers: {
+        "Authorization": "Bearer $accessToken",
+      },
+      {},
+    );
+
+    if (saveUserDataResponse.statusCode == 200 ||
+        saveUserDataResponse.statusCode == 201) {
+      return true;
+    }
+
+    if (saveUserDataResponse.statusCode == 401) {
+      await Get.find<UserController>().refreshAccessToken();
+      return await saveUserData(
+        name: name,
+        email: email,
+        enablePushNotifications: enablePushNotifications,
+        enableNewsUpdates: enableNewsUpdates,
+      );
+    }
+    return false;
   }
 }

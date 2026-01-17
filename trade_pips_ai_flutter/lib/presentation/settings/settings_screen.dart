@@ -159,9 +159,9 @@ class SettingsScreen extends GetView<SettingsController> {
                         backgroundColor: Color.fromRGBO(255, 0, 0, 1),
                       ),
                       onPressed: () {
-                        Get.offAndToNamed(AppRoutes.auth);
-                        userController.logOut();
+                        _confirmLogout(context, userController);
                       },
+
                       child: Text(
                         "Sign out".toUpperCase(),
                         style: TextStyle(
@@ -183,4 +183,50 @@ class SettingsScreen extends GetView<SettingsController> {
       ],
     );
   }
+}
+
+void _confirmLogout(BuildContext context, UserController userController) {
+  Get.dialog(
+    BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        backgroundColor: AppColors.secondary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          "Sign out?",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        content: const Text(
+          "Are you sure you want to sign out of your account?",
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text(
+              "Cancel",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(255, 0, 0, 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: () {
+              Get.back(); // close dialog
+              userController.logOut();
+              Get.offAllNamed(AppRoutes.auth);
+            },
+            child: const Text(
+              "Sign out",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

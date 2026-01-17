@@ -76,14 +76,15 @@ class SignalsScreen extends GetView<SignalsController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Trading Strategies".toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
+                      if (controller.uniqueStrategies.isNotEmpty)
+                        Text(
+                          "Trading Strategies".toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
                       if (controller.uniqueStrategies.isNotEmpty)
                         Tooltip(
                           message:

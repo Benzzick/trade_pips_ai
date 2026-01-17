@@ -21,10 +21,10 @@ class NewsModel {
 
   factory NewsModel.fromJson(Map<String, dynamic> json) {
     return NewsModel(
-      time: DateTime.parse(json['time'] as String),
-      currency: json['currency'] as String,
+      time: DateTime.tryParse(json['published_at'] ?? '') ?? DateTime.now(),
+      currency: json['pair'] as String,
       title: json['title'] as String,
-      description: json['description'] as String,
+      description: json['sentiment'] as String,
       impact: _impactFromString(json['impact'] as String),
     );
   }

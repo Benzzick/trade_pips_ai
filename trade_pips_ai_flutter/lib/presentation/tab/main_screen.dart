@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/presentation/charts/charts_screen.dart';
 import 'package:trade_pips_ai_flutter/presentation/news/news_screen.dart';
@@ -63,33 +64,73 @@ class MainScreen extends GetView<MainScreenController> {
             // Show retry if failed
             if (!controller.hasLoaded.value && !controller.isLoading.value) {
               return Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 2,
-                      child: const Text(
-                        "Failed to load data. Check your internet connection!",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 45,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                        ),
-                        onPressed: controller.getMainScreenData,
-                        icon: const Icon(Icons.refresh_rounded),
-                        label: const Text(
-                          "Retry",
-                          style: TextStyle(color: AppColors.secondary),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, 20 * (1 - value)),
+                        child: Transform.scale(
+                          scale: 0.9 + (0.1 * value),
+                          child: child,
                         ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      /// 🌐 Animated error illustration
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0.95, end: 1.05),
+                        duration: const Duration(seconds: 2),
+                        curve: Curves.easeInOut,
+                        builder: (context, v, child) {
+                          return Transform.scale(scale: v, child: child);
+                        },
+                        onEnd: () {},
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height / 3,
+                          child: Lottie.asset(
+                            "assets/lottie/no-internet.json",
+                            repeat: true,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      /// 🔁 Animated retry button
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 1, end: 1),
+                        duration: const Duration(milliseconds: 300),
+                        builder: (context, v, child) {
+                          return Transform.scale(scale: v, child: child);
+                        },
+                        child: SizedBox(
+                          height: 45,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                            ),
+                            onPressed: controller.getMainScreenData,
+                            icon: const Icon(
+                              Icons.refresh_rounded,
+                              color: AppColors.secondary,
+                            ),
+                            label: const Text(
+                              "Retry",
+                              style: TextStyle(color: AppColors.secondary),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }

@@ -7,6 +7,7 @@ import 'package:trade_pips_ai_flutter/models/news_model.dart';
 import 'package:trade_pips_ai_flutter/models/signal_model.dart';
 import 'package:trade_pips_ai_flutter/models/today_stats_model.dart';
 import 'package:trade_pips_ai_flutter/presentation/news/news_controller.dart';
+import 'package:trade_pips_ai_flutter/presentation/notifications/notifications_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/signals/signals_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/charts/charts_controller.dart';
 import 'package:trade_pips_ai_flutter/models/chart_pair_model.dart';
@@ -86,9 +87,24 @@ class MainScreenService extends GetConnect {
             ? news[Random().nextInt(news.length)]
             : null;
 
+        // ---------------- FETCH NOTIFICATIONS ----------------
+        final notifications = await fetchNotificationsOrNull();
+        if (notifications == null) {
+          if (!hasLoaded) _resetAll();
+          return false;
+        }
+
         // ---------------- FETCH CHART PAIRS ----------------
         final pairs = await fetchChartPairsOrNull();
         if (pairs == null) {
+          if (!hasLoaded) _resetAll();
+          return false;
+        }
+
+        // ---------------- FETCH CHART PAIRS ----------------
+        final enabledPushNotifications =
+            await fetchEnabledPushNotificationsOrNull();
+        if (enabledPushNotifications == null) {
           if (!hasLoaded) _resetAll();
           return false;
         }
@@ -99,14 +115,20 @@ class MainScreenService extends GetConnect {
         Get.find<NewsController>().newsList.value = news;
         Get.find<NewsController>().breakingNews.value = breakingNews;
         Get.find<ChartsController>().chartPairs.assignAll(pairs);
+        Get.find<NotificationsController>().notifications.value = notifications;
+        Get.find<UserController>().saveUser(
+          Get.find<UserController>().user.value!.copyWith(
+            enablePushNotifications: enabledPushNotifications,
+          ),
+        );
 
         return true;
       }
 
       // -------- AUTH --------
       if (response.statusCode == 401) {
-        final refreshed = await Get.find<UserController>().refreshAccessToken();
-        return refreshed;
+        await Get.find<UserController>().refreshAccessToken();
+        return await getMainScreenData(hasLoaded);
       }
 
       // -------- OTHER ERRORS --------
@@ -166,6 +188,84 @@ class MainScreenService extends GetConnect {
       }
     } catch (e) {
       print("fetchChartPairsOrNull error: $e");
+      return null;
+    }
+  }
+
+  Future<bool?> fetchEnabledPushNotificationsOrNull() async {
+    final accessToken =
+        Get.find<UserController>().user.value?.accessToken ?? "";
+
+    try {
+      final getProfileResponse = await get(
+        Endpoints.getProfile,
+        headers: {
+          "Authorization": "Bearer $accessToken",
+        },
+      );
+
+      if (getProfileResponse.statusCode == 200) {
+        final profileBody = getProfileResponse.body;
+
+        return profileBody['push_notifications'] as bool;
+      } else if (getProfileResponse.statusCode == 401) {
+        // Try refreshing token once
+        final refreshed = await Get.find<UserController>().refreshAccessToken();
+        if (!refreshed) return null;
+        return null; // Do NOT retry fetching again
+      } else {
+        // Any other error, just return null
+        return null;
+      }
+    } catch (e) {
+      print("fetchEnabledPushNotificationsOrNull error: $e");
+      return null;
+    }
+  }
+
+  Future<List<NotificationModel>?> fetchNotificationsOrNull() async {
+    final accessToken =
+        Get.find<UserController>().user.value?.accessToken ?? "";
+
+    try {
+      final response = await get(
+        Endpoints.inAppNotifications,
+        headers: {"Authorization": "Bearer $accessToken"},
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.body as Map<String, dynamic>;
+        final List<dynamic> notificationsJson = data['notifications'] ?? [];
+
+        return notificationsJson
+            .map(
+              (p) => NotificationModel(
+                direction: p["direction"],
+                pair: p["pair"],
+                strategy: p['strategy'],
+                timeGotSignal: p['timeGotSignal'],
+                targetPips: p['targetPips'],
+                timeFrame: p['timeFrame'],
+                probability: p['probability'],
+                entryPrice: p['entryPrice'],
+                takeProfitPrice: p['takeProfitPrice'],
+                stopLossPrice: p['stopLossPrice'],
+              ),
+            )
+            .toList();
+      } else if (response.statusCode == 401) {
+        // Try refreshing token once
+        final refreshed = await Get.find<UserController>().refreshAccessToken();
+        if (!refreshed) return null;
+        return null; // Do NOT retry fetching again
+      } else if (response.statusCode == 404) {
+        return [];
+      } else {
+        // Any other error, just return null
+        return null;
+      }
+    } catch (e) {
+      print("fetchNotificationsOrNull error: $e");
       return null;
     }
   }

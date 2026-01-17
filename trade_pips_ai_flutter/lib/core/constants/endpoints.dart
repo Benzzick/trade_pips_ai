@@ -11,4 +11,6 @@ class Endpoints {
   static const String signals = 'signals/latest/';
   static const String refreshToken = 'token/refresh/';
   static const String pairs = 'pairs/';
+  static const String toggleNotifications = 'profile/toggle-notifications/';
+  static const String inAppNotifications = 'app-notifications/';
 }
