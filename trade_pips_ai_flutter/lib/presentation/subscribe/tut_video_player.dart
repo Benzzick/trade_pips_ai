@@ -23,7 +23,7 @@ class _TutVideoPlayerState extends State<TutVideoPlayer> {
     _controller = YoutubePlayerController(
       initialVideoId: widget.videoId,
       flags: const YoutubePlayerFlags(
-        autoPlay: true,
+        autoPlay: false,
         controlsVisibleAtStart: false,
         hideControls: true,
         loop: true,

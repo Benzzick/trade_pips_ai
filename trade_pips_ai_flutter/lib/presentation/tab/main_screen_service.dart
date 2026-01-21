@@ -20,7 +20,7 @@ class MainScreenService extends GetConnect {
   }
 
   /// Fetch dashboard: signals, stats, news + chart pairs
-  Future<bool> getMainScreenData(bool hasLoaded) async {
+  Future<bool?> getMainScreenData(bool hasLoaded) async {
     final accessToken =
         Get.find<UserController>().user.value?.accessToken ?? "";
 
@@ -129,6 +129,11 @@ class MainScreenService extends GetConnect {
       if (response.statusCode == 401) {
         await Get.find<UserController>().refreshAccessToken();
         return await getMainScreenData(hasLoaded);
+      }
+
+      // -------- AUTH --------
+      if (response.statusCode == 403) {
+        return null;
       }
 
       // -------- OTHER ERRORS --------

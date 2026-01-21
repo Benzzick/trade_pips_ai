@@ -11,6 +11,7 @@ import 'package:trade_pips_ai_flutter/presentation/settings/settings_controller.
 import 'package:trade_pips_ai_flutter/presentation/signals/signals_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/subscribe/subscribe_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/subscribe/subscribe_screen.dart';
+import 'package:trade_pips_ai_flutter/presentation/subscribe/subscribe_service.dart';
 import 'package:trade_pips_ai_flutter/presentation/tab/main_screen.dart';
 import 'package:trade_pips_ai_flutter/presentation/tab/main_screen_controller.dart';
 import 'package:trade_pips_ai_flutter/presentation/tab/main_screen_service.dart';
@@ -29,8 +30,8 @@ class AppPages {
       page: () => AuthScreen(),
       binding: BindingsBuilder(
         () {
-          Get.put<AuthController>(AuthController());
-          Get.put<AuthService>(AuthService());
+          Get.put<AuthController>(AuthController(), permanent: true);
+          Get.put<AuthService>(AuthService(), permanent: true);
         },
       ),
     ),
@@ -62,6 +63,7 @@ class AppPages {
       binding: BindingsBuilder(
         () {
           Get.put<SubscribeController>(SubscribeController());
+          Get.put<SubscribeService>(SubscribeService());
         },
       ),
     ),

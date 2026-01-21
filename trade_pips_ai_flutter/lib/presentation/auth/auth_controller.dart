@@ -8,6 +8,7 @@ import 'package:trade_pips_ai_flutter/presentation/auth/auth_service.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/change_password_screen.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/success_screen.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/verify_email_screen.dart';
+import 'package:trade_pips_ai_flutter/routes/app_pages.dart';
 
 class AuthController extends GetxController {
   final RxBool seePassword = true.obs;
@@ -63,6 +64,20 @@ class AuthController extends GetxController {
 
   void toggleisLogin() {
     isLogin.toggle();
+  }
+
+  Future<void> sendfcmToken() async {
+    isLoading.value = true;
+
+    final loggedIn = await Get.find<AuthService>().sendfcmToken();
+
+    if (loggedIn == null) {
+      Get.toNamed(AppRoutes.subscribe);
+    } else if (loggedIn) {
+      Get.offAllNamed(AppRoutes.main);
+    }
+
+    isLoading.value = false;
   }
 
   Future<void> loginWithGoogle() async {

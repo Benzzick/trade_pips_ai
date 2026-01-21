@@ -13,4 +13,6 @@ class Endpoints {
   static const String pairs = 'pairs/';
   static const String toggleNotifications = 'profile/toggle-notifications/';
   static const String inAppNotifications = 'app-notifications/';
+  static const String getPaymentUrl = 'paystack/init/';
+  static const String verifyPayment = 'payment/verify/';
 }

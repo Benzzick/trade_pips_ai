@@ -147,7 +147,7 @@ class SubscribeScreen extends GetView<SubscribeController> {
                                 duration: controller.subModel.value!.duration,
                                 thingsToGet:
                                     controller.subModel.value!.thingsToGet,
-                                onSubscribe: controller.subscribe,
+                                onSubscribe: controller.loadSubscriptionPage,
                               ),
                               SizedBox(
                                 height: 40,

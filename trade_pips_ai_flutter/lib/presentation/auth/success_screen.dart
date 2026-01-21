@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
 import 'package:trade_pips_ai_flutter/presentation/auth/auth_controller.dart';
-import 'package:trade_pips_ai_flutter/routes/app_pages.dart';
 
 class SuccessScreen extends GetView<AuthController> {
   const SuccessScreen({super.key});
@@ -57,23 +56,35 @@ class SuccessScreen extends GetView<AuthController> {
                     scale: 2,
                   ),
                   Spacer(),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 55,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
-                      ),
-                      onPressed: () {
-                        Get.offAllNamed(AppRoutes.main);
-                      },
-                      child: const Text(
-                        "Continue",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                  Obx(
+                    () => SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondary,
                         ),
+                        onPressed: controller.isLoading.value
+                            ? () {}
+                            : controller.sendfcmToken,
+                        child: controller.isLoading.value
+                            ? SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  backgroundColor: Colors.white,
+                                  color: Colors.black,
+                                  strokeCap: StrokeCap.round,
+                                ),
+                              )
+                            : const Text(
+                                "Continue",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
                     ),
                   ),

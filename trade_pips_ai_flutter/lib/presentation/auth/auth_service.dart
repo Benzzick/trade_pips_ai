@@ -13,6 +13,47 @@ class AuthService extends GetConnect {
     super.onInit();
   }
 
+  Future<bool?> sendfcmToken() async {
+    final accessToken =
+        Get.find<UserController>().user.value?.accessToken ?? "";
+    final token = await FirebaseMessaging.instance.getToken();
+
+    final sendFcmTokenResponse = await post(
+      Endpoints.getFcmToken,
+      headers: {
+        "Authorization": "Bearer $accessToken",
+      },
+      {
+        "token": token,
+        "platform": "android",
+      },
+    );
+    print(sendFcmTokenResponse.statusCode);
+    print(sendFcmTokenResponse.body);
+    if (sendFcmTokenResponse.statusCode == 200 ||
+        sendFcmTokenResponse.statusCode == 201) {
+      final userController = Get.find<UserController>();
+      final user = userController.user.value!;
+      userController.saveUser(user);
+      Get.find<TopSnackBarController>().show(
+        message: "Login successfull!",
+        success: true,
+      );
+      return true;
+    } else if (sendFcmTokenResponse.statusCode == 401) {
+      await Get.find<UserController>().refreshAccessToken();
+      return await sendfcmToken();
+    } else if (sendFcmTokenResponse.statusCode == 403) {
+      return null;
+    } else {
+      Get.find<TopSnackBarController>().show(
+        message: "Failed to login. Try again!",
+        success: false,
+      );
+      return false;
+    }
+  }
+
   Future<bool> registerWithEmail(
     String email,
     String password,
@@ -131,6 +172,7 @@ class AuthService extends GetConnect {
   }
 
   Future<bool> loginWithGoogle() async {
+    String message = "";
     try {
       await GoogleSignIn.instance.initialize(
         serverClientId:
@@ -140,7 +182,10 @@ class AuthService extends GetConnect {
       final GoogleSignInAccount user = await GoogleSignIn.instance
           .authenticate();
       final idToken = user.authentication.idToken;
-      if (idToken == null) throw Exception();
+      if (idToken == null) {
+        message = "Google authentication failed!";
+        throw Exception();
+      }
 
       final requestBody = {"id_token": idToken};
       final response = await post(Endpoints.loginWithGoogle, requestBody);
@@ -165,48 +210,24 @@ class AuthService extends GetConnect {
           profileBody['refreshToken'] = refreshToken;
 
           final user = UserModel.fromJson(profileBody);
-          final String? token;
-          try {
-            token = await FirebaseMessaging.instance.getToken();
-          } catch (e) {
-            return false;
-          }
-
-          print("$token bbjnsbdjenkjndkjnd");
-
-          final sendFcmTokenResponse = await post(
-            Endpoints.getFcmToken,
-            headers: {
-              "Authorization": "Bearer $accessToken",
-            },
-            {
-              "token": token,
-              "platform": "android",
-            },
+          final userController = Get.find<UserController>();
+          userController.user.value = user;
+          Get.find<TopSnackBarController>().show(
+            message: "Login successfull!",
+            success: true,
           );
-
-          if (sendFcmTokenResponse.statusCode == 200 ||
-              sendFcmTokenResponse.statusCode == 201) {
-            final userController = Get.find<UserController>();
-            userController.saveUser(user);
-            Get.find<TopSnackBarController>().show(
-              message: "Login successfull!",
-              success: true,
-            );
-            return true;
-          } else {
-            throw Exception(sendFcmTokenResponse.body);
-          }
+          return true;
         } else {
+          message = getProfileResponse.body;
           throw Exception(getProfileResponse.body);
         }
       } else {
+        message = response.body;
         throw Exception(response.body);
       }
     } catch (e) {
       Get.find<TopSnackBarController>().show(
-        message:
-            "Failed to sign in with Google. Check your internet and try again!",
+        message: message,
         success: false,
       );
       return false;
@@ -238,35 +259,13 @@ class AuthService extends GetConnect {
         profileBody['refreshToken'] = refreshToken;
 
         final user = UserModel.fromJson(profileBody);
-
-        final token = await FirebaseMessaging.instance.getToken();
-
-        final sendFcmTokenResponse = await post(
-          Endpoints.getFcmToken,
-          headers: {
-            "Authorization": "Bearer $accessToken",
-          },
-          {
-            "token": token,
-            "platform": "android",
-          },
+        final userController = Get.find<UserController>();
+        userController.user.value = user;
+        Get.find<TopSnackBarController>().show(
+          message: "Login successfull!",
+          success: true,
         );
-        if (sendFcmTokenResponse.statusCode == 200 ||
-            sendFcmTokenResponse.statusCode == 201) {
-          final userController = Get.find<UserController>();
-          userController.saveUser(user);
-          Get.find<TopSnackBarController>().show(
-            message: "Login successfull!",
-            success: true,
-          );
-          return true;
-        } else {
-          Get.find<TopSnackBarController>().show(
-            message: "Failed to login. Try again!",
-            success: false,
-          );
-          return false;
-        }
+        return true;
       } else {
         Get.find<TopSnackBarController>().show(
           message: "Failed to fetch user profile",

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/presentation/tab/main_screen_service.dart';
+import 'package:trade_pips_ai_flutter/routes/app_pages.dart';
 
 class MainScreenController extends GetxController {
   final RxInt currentIndex = 0.obs;
@@ -43,8 +44,12 @@ class MainScreenController extends GetxController {
       hasLoaded.value,
     );
 
-    if (!hasLoaded.value) {
-      hasLoaded.value = loaded;
+    if (loaded != null) {
+      if (!hasLoaded.value) {
+        hasLoaded.value = loaded;
+      }
+    } else {
+      Get.offAllNamed(AppRoutes.subscribe);
     }
 
     isLoading.value = false;

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:trade_pips_ai_flutter/presentation/subscribe/subscribe_controller.dart';
 
-class PlanCard extends StatelessWidget {
+class PlanCard extends GetView<SubscribeController> {
   final String planName;
   final String price;
   final String duration;
@@ -126,26 +128,38 @@ class PlanCard extends StatelessWidget {
           const SizedBox(height: 16),
 
           /// ── CTA BUTTON (CLICKABLE) ─────────────
-          SizedBox(
-            width: double.infinity,
-            height: 59,
-            child: ElevatedButton(
-              onPressed: onSubscribe,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFC0C0C0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+          Obx(
+            () => SizedBox(
+              width: double.infinity,
+              height: 59,
+              child: ElevatedButton(
+                onPressed: controller.isLoading.value ? () {} : onSubscribe,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFC0C0C0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
-              ),
-              child: const Text(
-                "Select Plan",
-                style: TextStyle(
-                  fontFamily: 'Geologica',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                child: controller.isLoading.value
+                    ? SizedBox(
+                        height: 30,
+                        width: 30,
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                          color: Colors.black,
+                          strokeCap: StrokeCap.round,
+                        ),
+                      )
+                    : const Text(
+                        "Select Plan",
+                        style: TextStyle(
+                          fontFamily: 'Geologica',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ),
