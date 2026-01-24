@@ -149,10 +149,12 @@ class NewsScreen extends GetView<NewsController> {
                                 ),
                                 Text(
                                   controller.breakingNews.value!.title,
+                                  maxLines: 2,
                                   style: TextStyle(
                                     color: AppColors.primary,
                                     fontSize: 19,
                                     fontWeight: FontWeight.w700,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 Text(
@@ -178,9 +180,6 @@ class NewsScreen extends GetView<NewsController> {
                   ),
                 ],
                 Expanded(child: NewsWidget()),
-                SizedBox(
-                  height: 20,
-                ),
               ],
             ),
           ),

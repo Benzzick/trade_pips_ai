@@ -72,10 +72,12 @@ class NewsWidget extends GetView<NewsController> {
                         ),
                         Text(
                           controller.newsList[index].title,
+                          maxLines: 2,
                           style: TextStyle(
                             color: AppColors.primary,
                             fontSize: 12,
                             fontWeight: FontWeight.w900,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         SizedBox(

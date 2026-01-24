@@ -49,12 +49,8 @@ class SignalModel {
       timeFrame: json['timeframe'],
       probability: json['probability'],
       entryPrice: double.parse(json['entry_price'].toString()),
-      takeProfitPrice: (json['take_profit_price'] as List)
-          .map((e) => double.parse(e.toString()))
-          .toList(),
-      stopLossPrice: (json['stop_loss_price'] as List)
-          .map((e) => double.parse(e.toString()))
-          .toList(),
+      takeProfitPrice: parsePriceList(json['take_profit_price']),
+      stopLossPrice: parsePriceList(json['stop_loss_price']),
       contractSize: (json['contract_size'] as num).toDouble(),
       tickSize: (json['tick_size'] as num).toDouble(),
       tickValue: (json['tick_value'] as num).toDouble(),
@@ -92,4 +88,15 @@ class NotificationModel {
     required this.takeProfitPrice,
     required this.stopLossPrice,
   });
+}
+
+List<double> parsePriceList(dynamic value) {
+  if (value == null) return [];
+
+  if (value is List) {
+    return value.map((e) => double.parse(e.toString())).toList();
+  }
+
+  // If it's a single number, wrap it into a list
+  return [double.parse(value.toString())];
 }

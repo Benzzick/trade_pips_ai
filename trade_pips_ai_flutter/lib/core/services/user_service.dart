@@ -9,7 +9,7 @@ class UserService extends GetConnect {
     super.onInit();
   }
 
-  Future<String?> refreshAccessToken(String refreshToken) async {
+  Future<Map?> refreshAccessToken(String refreshToken) async {
     final refreshAccessTokenResponse = await post(
       Endpoints.refreshToken,
       {
@@ -19,9 +19,9 @@ class UserService extends GetConnect {
     if (refreshAccessTokenResponse.statusCode == 200 ||
         refreshAccessTokenResponse.statusCode == 201) {
       final refreshAccessTokenResponseBody = refreshAccessTokenResponse.body;
-      final accessToken = refreshAccessTokenResponseBody["access"] as String;
+      // final accessToken = refreshAccessTokenResponseBody["access"] as String;
 
-      return accessToken;
+      return refreshAccessTokenResponseBody;
     } else {
       return null;
     }

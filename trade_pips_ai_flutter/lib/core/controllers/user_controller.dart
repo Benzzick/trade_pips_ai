@@ -56,11 +56,16 @@ class UserController extends GetxController {
   }
 
   Future<bool> refreshAccessToken() async {
-    final accessToken = await Get.find<UserService>().refreshAccessToken(
+    final refreshTokenData = await Get.find<UserService>().refreshAccessToken(
       user.value!.refreshToken,
     );
-    if (accessToken != null) {
-      saveUser(user.value!.copyWith(accessToken: accessToken));
+    if (refreshTokenData != null) {
+      saveUser(
+        user.value!.copyWith(
+          accessToken: refreshTokenData["access"],
+          refreshToken: refreshTokenData["refresh"],
+        ),
+      );
       return true;
     } else {
       return false;

@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:trade_pips_ai_flutter/core/constants/app_colors.dart';
+import 'package:trade_pips_ai_flutter/core/controllers/top_snack_bar_controller.dart';
 import 'package:trade_pips_ai_flutter/core/utils/time_util.dart';
 import 'package:trade_pips_ai_flutter/models/signal_model.dart';
 import 'package:trade_pips_ai_flutter/presentation/signals/signals_controller.dart';
@@ -207,28 +209,53 @@ class SignalListWidget extends GetView<SignalsController> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Text(
-                              "Entry Price",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color.fromRGBO(
-                                  255,
-                                  255,
-                                  255,
-                                  0.54,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Entry Price",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color.fromRGBO(
+                                      255,
+                                      255,
+                                      255,
+                                      0.54,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Text(
+                                  "${signal.entryPrice}",
+                                  style: TextStyle(
+                                    fontSize: 19,
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              "${signal.entryPrice}",
-                              style: TextStyle(
-                                fontSize: 19,
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
+                            IconButton(
+                              icon: const Icon(
+                                Icons.copy,
+                                size: 20,
+                                color: Colors.white,
                               ),
+                              onPressed: () async {
+                                Clipboard.setData(
+                                  ClipboardData(
+                                    text: "${signal.entryPrice}",
+                                  ),
+                                ).then(
+                                  (value) {
+                                    Get.find<TopSnackBarController>().show(
+                                      message: "Copied!",
+                                      success: true,
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -304,7 +331,7 @@ class SignalListWidget extends GetView<SignalsController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Take Profit ${tpIndex + 1}",
+                                    "Take Profit",
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Color.fromRGBO(
@@ -325,43 +352,65 @@ class SignalListWidget extends GetView<SignalsController> {
                                   ),
                                 ],
                               ),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      if (tpIndex <
-                                          signal.takeProfitPrice.length - 1) {
-                                        controller.selectedTpIndex[controller
-                                                .safeSelectedIndex] +=
-                                            1;
-                                      }
-                                    },
-                                    child: Image.asset(
-                                      "assets/icons/up.png",
-                                      scale: 2,
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.copy,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () async {
+                                  Clipboard.setData(
+                                    ClipboardData(
+                                      text:
+                                          "${signal.takeProfitPrice[slIndex]}",
                                     ),
-                                  ),
-                                  SizedBox(height: 15),
-                                  GestureDetector(
-                                    onTap: () {
-                                      if (tpIndex > 0) {
-                                        controller.selectedTpIndex[controller
-                                                .safeSelectedIndex] -=
-                                            1;
-                                      }
+                                  ).then(
+                                    (value) {
+                                      Get.find<TopSnackBarController>().show(
+                                        message: "Copied!",
+                                        success: true,
+                                      );
                                     },
-                                    child: Transform.rotate(
-                                      angle: 3.1416,
-                                      child: Image.asset(
-                                        "assets/icons/up.png",
-                                        scale: 2,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
+                              // Column(
+                              //   mainAxisAlignment:
+                              //       MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         if (tpIndex <
+                              //             signal.takeProfitPrice.length - 1) {
+                              //           controller.selectedTpIndex[controller
+                              //                   .safeSelectedIndex] +=
+                              //               1;
+                              //         }
+                              //       },
+                              //       child: Image.asset(
+                              //         "assets/icons/up.png",
+                              //         scale: 2,
+                              //       ),
+                              //     ),
+                              //     SizedBox(height: 15),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         if (tpIndex > 0) {
+                              //           controller.selectedTpIndex[controller
+                              //                   .safeSelectedIndex] -=
+                              //               1;
+                              //         }
+                              //       },
+                              //       child: Transform.rotate(
+                              //         angle: 3.1416,
+                              //         child: Image.asset(
+                              //           "assets/icons/up.png",
+                              //           scale: 2,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                             ],
                           ),
                         ),
@@ -396,7 +445,7 @@ class SignalListWidget extends GetView<SignalsController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Stop Loss ${slIndex + 1}",
+                                    "Stop Loss",
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Color.fromRGBO(
@@ -417,43 +466,64 @@ class SignalListWidget extends GetView<SignalsController> {
                                   ),
                                 ],
                               ),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      if (slIndex <
-                                          signal.stopLossPrice.length - 1) {
-                                        controller.selectedSlIndex[controller
-                                                .safeSelectedIndex] +=
-                                            1;
-                                      }
-                                    },
-                                    child: Image.asset(
-                                      "assets/icons/up.png",
-                                      scale: 2,
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.copy,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () async {
+                                  Clipboard.setData(
+                                    ClipboardData(
+                                      text: "${signal.stopLossPrice[slIndex]}",
                                     ),
-                                  ),
-                                  SizedBox(height: 15),
-                                  GestureDetector(
-                                    onTap: () {
-                                      if (slIndex > 0) {
-                                        controller.selectedSlIndex[controller
-                                                .safeSelectedIndex] -=
-                                            1;
-                                      }
+                                  ).then(
+                                    (value) {
+                                      Get.find<TopSnackBarController>().show(
+                                        message: "Copied!",
+                                        success: true,
+                                      );
                                     },
-                                    child: Transform.rotate(
-                                      angle: 3.1416,
-                                      child: Image.asset(
-                                        "assets/icons/up.png",
-                                        scale: 2,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
+                              // Column(
+                              //   mainAxisAlignment:
+                              //       MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         if (slIndex <
+                              //             signal.stopLossPrice.length - 1) {
+                              //           controller.selectedSlIndex[controller
+                              //                   .safeSelectedIndex] +=
+                              //               1;
+                              //         }
+                              //       },
+                              //       child: Image.asset(
+                              //         "assets/icons/up.png",
+                              //         scale: 2,
+                              //       ),
+                              //     ),
+                              //     SizedBox(height: 15),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         if (slIndex > 0) {
+                              //           controller.selectedSlIndex[controller
+                              //                   .safeSelectedIndex] -=
+                              //               1;
+                              //         }
+                              //       },
+                              //       child: Transform.rotate(
+                              //         angle: 3.1416,
+                              //         child: Image.asset(
+                              //           "assets/icons/up.png",
+                              //           scale: 2,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                             ],
                           ),
                         ),

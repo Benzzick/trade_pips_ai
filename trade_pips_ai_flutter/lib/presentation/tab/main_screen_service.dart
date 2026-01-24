@@ -79,9 +79,15 @@ class MainScreenService extends GetConnect {
         // News
         final List newsJson = (data['news'] is List) ? data['news'] : [];
 
-        final news = newsJson
-            .map((e) => NewsModel.fromJson(Map<String, dynamic>.from(e)))
-            .toList();
+        final news =
+            newsJson
+                .map((e) => NewsModel.fromJson(Map<String, dynamic>.from(e)))
+                .toList()
+              ..sort(
+                (a, b) {
+                  return b.time.compareTo(a.time);
+                },
+              );
 
         final breakingNews = news.isNotEmpty
             ? news[Random().nextInt(news.length)]
@@ -127,7 +133,8 @@ class MainScreenService extends GetConnect {
 
       // -------- AUTH --------
       if (response.statusCode == 401) {
-        await Get.find<UserController>().refreshAccessToken();
+        final refreshed = await Get.find<UserController>().refreshAccessToken();
+        if (!refreshed) return false;
         return await getMainScreenData(hasLoaded);
       }
 
@@ -186,7 +193,7 @@ class MainScreenService extends GetConnect {
         // Try refreshing token once
         final refreshed = await Get.find<UserController>().refreshAccessToken();
         if (!refreshed) return null;
-        return null; // Do NOT retry fetching again
+        return fetchChartPairsOrNull(); // Do NOT retry fetching again
       } else {
         // Any other error, just return null
         return null;
