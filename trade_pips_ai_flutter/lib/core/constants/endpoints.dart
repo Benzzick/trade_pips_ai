@@ -1,5 +1,5 @@
 class Endpoints {
-  static const String baseUrl = 'https://benblish.pythonanywhere.com/api/';
+  static const String baseUrl = 'https://me.me';
   static const String register = 'auth/register/';
   static const String login = 'token/';
   static const String loginWithGoogle = 'google-login/';
